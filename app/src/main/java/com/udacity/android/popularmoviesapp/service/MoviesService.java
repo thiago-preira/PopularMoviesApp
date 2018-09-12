@@ -11,6 +11,7 @@ import com.udacity.android.popularmoviesapp.domain.MovieResponse;
 import com.udacity.android.popularmoviesapp.utils.HttpUtils;
 
 import java.util.List;
+import java.util.Locale;
 
 public class MoviesService {
 
@@ -22,6 +23,10 @@ public class MoviesService {
 
     private static final String API_KEY_PARAM = "api_key";
 
+    private static final String LANGUAGE_PARAM = "language";
+
+    private static final String DEFAULT_LANGUAGE= "pt-BR";
+
     private static final String MOST_POPULAR = "popular";
 
     private static final String MOST_RATED = "top_rated";
@@ -31,21 +36,26 @@ public class MoviesService {
     private MoviesService() {
     }
 
-    private static Uri buildUrl(String sortStrategy) {
+    private static Uri buildUrl(String sortStrategy,String locale) {
         return Uri.parse(String.format(MOVIES_BASE_URL,sortStrategy))
                 .buildUpon()
                 .appendQueryParameter(API_KEY_PARAM, movieApiKey)
+                .appendQueryParameter(LANGUAGE_PARAM,locale)
                 .build();
     }
 
-    public static List<Movie> popularMovies() {
-        Uri popularMoviesUri = buildUrl(MOST_POPULAR);
+    public static List<Movie> popularMovies(String locale) {
+        Uri popularMoviesUri = buildUrl(MOST_POPULAR,locale);
         String mostPopularMoviesJson = HttpUtils.fetchDataFrom(popularMoviesUri);
         return parseJSON(mostPopularMoviesJson).getResults();
     }
 
-    public static List<Movie> topRatedMovies() {
-        Uri topRatedMoviesUri = buildUrl(MOST_RATED);
+    public static List<Movie> popularMovies() {
+        return popularMovies(DEFAULT_LANGUAGE);
+    }
+
+    public static List<Movie> topRatedMovies(String locale) {
+        Uri topRatedMoviesUri = buildUrl(MOST_RATED,locale);
         String topRatedMoviesJson = HttpUtils.fetchDataFrom(topRatedMoviesUri);
         return parseJSON(topRatedMoviesJson).getResults();
     }

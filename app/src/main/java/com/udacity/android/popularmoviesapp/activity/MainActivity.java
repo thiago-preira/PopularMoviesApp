@@ -1,6 +1,7 @@
 package com.udacity.android.popularmoviesapp.activity;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -17,10 +18,12 @@ import com.udacity.android.popularmoviesapp.domain.Movie;
 import com.udacity.android.popularmoviesapp.service.MoviesService;
 
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements MoviesAdapter.MoviesAdapterOnClickHandler{
 
-    private static final int NUM_COLUMNS = 2;
+    private static final int PORTRAIT_NUM_COLUMNS = 2;
+    private static final int LANDSCAPE_NUM_COLUMNS = 4;
 
     private RecyclerView mMoviesRecyclerView;
     private TextView mErrorMessageDisplay;
@@ -36,9 +39,15 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
-        GridLayoutManager layoutManager
-                = new GridLayoutManager(this,NUM_COLUMNS);
-        mMoviesRecyclerView.setLayoutManager(layoutManager);
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            mMoviesRecyclerView.setLayoutManager(new GridLayoutManager(this, PORTRAIT_NUM_COLUMNS));
+        }
+        else{
+            mMoviesRecyclerView.setLayoutManager(new GridLayoutManager(this, LANDSCAPE_NUM_COLUMNS));
+        }
+
+
+
         mMoviesRecyclerView.setHasFixedSize(true);
 
         mMoviesAdapter = new MoviesAdapter(this);
@@ -48,7 +57,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     private void loadMovieData() {
         showMoviesData();
-        new FetchMoviesTask().execute();
+        Locale current = getResources().getConfiguration().locale;
+        new FetchMoviesTask().execute(current.toString().replace("_","-"));
     }
 
     private void showMoviesData() {
@@ -77,7 +87,11 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
         @Override
         protected List<Movie> doInBackground(String... params) {
-            return MoviesService.popularMovies();
+            if(params.length==0){
+                return MoviesService.popularMovies();
+            }
+            String locale = params[0];
+            return MoviesService.popularMovies(locale);
         }
 
         @Override
