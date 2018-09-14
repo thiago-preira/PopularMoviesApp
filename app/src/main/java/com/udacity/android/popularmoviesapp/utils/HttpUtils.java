@@ -22,7 +22,7 @@ public class HttpUtils {
             URL url = buildUrl(uri);
             return getResponseFromHttpUrl(url);
         } catch (IOException e) {
-            Log.e(TAG,String.format("Error fetching data from URI: %s",uri));
+            Log.e(TAG, String.format("Error fetching data from URI: %s", uri));
             return null;
         }
     }
@@ -33,6 +33,9 @@ public class HttpUtils {
         return url;
     }
 
+    /*Code from SUNSHINE APP
+     *https://github.com/udacity/ud851-Sunshine
+     * */
     private static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {

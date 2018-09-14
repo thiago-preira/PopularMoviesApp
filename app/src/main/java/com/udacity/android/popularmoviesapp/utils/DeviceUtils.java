@@ -8,26 +8,29 @@ import java.util.Locale;
 
 public class DeviceUtils {
 
-    public static String getDeviceDensity(Context context){
+    /*Code to check density of screen
+    * https://stackoverflow.com/questions/3166501/getting-the-screen-density-programmatically-in-android
+    * */
+    public static String getDeviceDensity(Context context) {
         String deviceDensity;
         switch (context.getResources().getDisplayMetrics().densityDpi) {
             case DisplayMetrics.DENSITY_LOW:
-                deviceDensity =  "ldpi";
+                deviceDensity = "ldpi";
                 break;
             case DisplayMetrics.DENSITY_MEDIUM:
-                deviceDensity =  "mdpi";
+                deviceDensity = "mdpi";
                 break;
             case DisplayMetrics.DENSITY_HIGH:
-                deviceDensity =  "hdpi";
+                deviceDensity = "hdpi";
                 break;
             case DisplayMetrics.DENSITY_XHIGH:
-                deviceDensity =  "xhdpi";
+                deviceDensity = "xhdpi";
                 break;
             case DisplayMetrics.DENSITY_XXHIGH:
                 deviceDensity = "xxhdpi";
                 break;
             case DisplayMetrics.DENSITY_XXXHIGH:
-                deviceDensity =  "xxxhdpi";
+                deviceDensity = "xxxhdpi";
                 break;
             default:
                 deviceDensity = "xxxhdpi";
@@ -35,16 +38,22 @@ public class DeviceUtils {
         return deviceDensity.toUpperCase();
     }
 
-    public static String getLanguage(Context context){
+    public static String getLanguage(Context context) {
         return getLocale(context).toString().replace("_", "-");
     }
 
-    public static Locale getLocale(Context context){
+    /*Code to get Locale from phone
+     *https://stackoverflow.com/questions/14389349/android-get-current-locale-not-default
+     */
+    public static Locale getLocale(Context context) {
         return context.getResources().getConfiguration().locale;
     }
 
-    public static boolean hasInternet(Context context){
-        ConnectivityManager connectivityManager = (ConnectivityManager)context
+    /*Code to check internet access
+     * https://www.programcreek.com/java-api-examples/android.net.NetworkInfo
+     * */
+    public static boolean hasInternet(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         return connectivityManager.isDefaultNetworkActive();
     }
