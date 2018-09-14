@@ -1,6 +1,7 @@
 package com.udacity.android.popularmoviesapp.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.udacity.android.popularmoviesapp.MovieDetailActivity;
 import com.udacity.android.popularmoviesapp.R;
 import com.udacity.android.popularmoviesapp.adapter.MoviesAdapter;
 import com.udacity.android.popularmoviesapp.domain.Movie;
@@ -74,7 +76,10 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     @Override
     public void onClick(Movie movie) {
         Context context = this;
-        Toast.makeText(context,String.format("Movie: %s",movie.getTitle()),Toast.LENGTH_LONG).show();
+        Class destinationClass = MovieDetailActivity.class;
+        Intent intentToStartDetailActivity = new Intent(context, destinationClass);
+        intentToStartDetailActivity.putExtra("Movie", movie);
+        startActivity(intentToStartDetailActivity);
     }
 
     class FetchMoviesTask extends AsyncTask<String, Void, List<Movie>> {

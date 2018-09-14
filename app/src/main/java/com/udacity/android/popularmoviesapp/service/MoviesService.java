@@ -31,7 +31,7 @@ public class MoviesService {
 
     private static final String MOST_RATED = "top_rated";
 
-    private static String movieApiKey = BuildConfig.MovieDBApiKey;
+    private static final String movieApiKey = BuildConfig.MovieDBApiKey;
 
     private MoviesService() {
     }

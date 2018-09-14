@@ -6,7 +6,7 @@ import android.util.DisplayMetrics;
 public class DeviceUtils {
 
     public static String getDeviceDensity(Context context){
-        String deviceDensity = "";
+        String deviceDensity;
         switch (context.getResources().getDisplayMetrics().densityDpi) {
             case DisplayMetrics.DENSITY_LOW:
                 deviceDensity =  "ldpi";

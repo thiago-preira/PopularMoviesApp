@@ -1,11 +1,12 @@
 package com.udacity.android.popularmoviesapp.domain;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class Movie {
-    private long voteCount;
+public class Movie  implements Serializable{
     private long id;
     private boolean video;
+    private long voteCount;
     private float voteAverage;
     private String title;
     private float popularity;
