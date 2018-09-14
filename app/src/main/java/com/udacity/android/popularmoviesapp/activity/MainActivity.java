@@ -1,8 +1,10 @@
 package com.udacity.android.popularmoviesapp.activity;
 
+import android.bluetooth.BluetoothClass;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -58,8 +60,12 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
 
     private void loadMovieData(MoviesService.Filter filter) {
-        showMoviesData();
-        new FetchMoviesTask().execute(DeviceUtils.getLanguage(this), filter.name());
+        if (DeviceUtils.hasInternet(this)) {
+            showMoviesData();
+            new FetchMoviesTask().execute(DeviceUtils.getLanguage(this), filter.name());
+        } else {
+            showErrorMessage();
+        }
     }
 
     private void showMoviesData() {

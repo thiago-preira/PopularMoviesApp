@@ -1,6 +1,7 @@
 package com.udacity.android.popularmoviesapp.utils;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
 import android.util.DisplayMetrics;
 
 import java.util.Locale;
@@ -40,6 +41,12 @@ public class DeviceUtils {
 
     public static Locale getLocale(Context context){
         return context.getResources().getConfiguration().locale;
+    }
+
+    public static boolean hasInternet(Context context){
+        ConnectivityManager connectivityManager = (ConnectivityManager)context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        return connectivityManager.isDefaultNetworkActive();
     }
 
 }
