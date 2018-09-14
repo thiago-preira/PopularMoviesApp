@@ -18,22 +18,17 @@ public class HttpUtils {
     private static final String TAG = HttpUtils.class.getSimpleName();
 
     public static String fetchDataFrom(Uri uri) {
-        URL url = buildUrl(uri);
         try {
+            URL url = buildUrl(uri);
             return getResponseFromHttpUrl(url);
         } catch (IOException e) {
-            Log.e(TAG,String.format("Error fetching data from URL: %s",url, e));
+            Log.e(TAG,String.format("Error fetching data from URI: %s",uri));
             return null;
         }
     }
 
-    private static URL buildUrl(Uri uri) {
-        URL url = null;
-        try {
-            url = new URL(uri.toString());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+    private static URL buildUrl(Uri uri) throws MalformedURLException {
+        URL url = new URL(uri.toString());
         Log.v(TAG, "Built URI " + url);
         return url;
     }
