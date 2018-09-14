@@ -3,6 +3,8 @@ package com.udacity.android.popularmoviesapp.utils;
 import android.content.Context;
 import android.util.DisplayMetrics;
 
+import java.util.Locale;
+
 public class DeviceUtils {
 
     public static String getDeviceDensity(Context context){
@@ -30,6 +32,14 @@ public class DeviceUtils {
                 deviceDensity = "xxxhdpi";
         }
         return deviceDensity.toUpperCase();
+    }
+
+    public static String getLanguage(Context context){
+        return getLocale(context).toString().replace("_", "-");
+    }
+
+    public static Locale getLocale(Context context){
+        return context.getResources().getConfiguration().locale;
     }
 
 }

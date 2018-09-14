@@ -8,21 +8,22 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.udacity.android.popularmoviesapp.MovieDetailActivity;
 import com.udacity.android.popularmoviesapp.R;
 import com.udacity.android.popularmoviesapp.adapter.MoviesAdapter;
 import com.udacity.android.popularmoviesapp.domain.Movie;
 import com.udacity.android.popularmoviesapp.service.MoviesService;
+import com.udacity.android.popularmoviesapp.utils.DeviceUtils;
 
 import java.util.List;
-import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements MoviesAdapter.MoviesAdapterOnClickHandler{
+public class MainActivity extends AppCompatActivity implements MoviesAdapter.MoviesAdapterOnClickHandler {
 
     private static final int PORTRAIT_NUM_COLUMNS = 2;
     private static final int LANDSCAPE_NUM_COLUMNS = 4;
@@ -41,26 +42,24 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             mMoviesRecyclerView.setLayoutManager(new GridLayoutManager(this, PORTRAIT_NUM_COLUMNS));
-        }
-        else{
+        } else {
             mMoviesRecyclerView.setLayoutManager(new GridLayoutManager(this, LANDSCAPE_NUM_COLUMNS));
         }
-
 
 
         mMoviesRecyclerView.setHasFixedSize(true);
 
         mMoviesAdapter = new MoviesAdapter(this);
         mMoviesRecyclerView.setAdapter(mMoviesAdapter);
-        loadMovieData();
+        loadMovieData(MoviesService.Filter.POPULAR);
     }
 
-    private void loadMovieData() {
+
+    private void loadMovieData(MoviesService.Filter filter) {
         showMoviesData();
-        Locale current = getResources().getConfiguration().locale;
-        new FetchMoviesTask().execute(current.toString().replace("_","-"));
+        new FetchMoviesTask().execute(DeviceUtils.getLanguage(this), filter.name());
     }
 
     private void showMoviesData() {
@@ -92,11 +91,13 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
         @Override
         protected List<Movie> doInBackground(String... params) {
-            if(params.length==0){
+            if (params.length == 0) {
                 return MoviesService.popularMovies();
             }
             String locale = params[0];
-            return MoviesService.popularMovies(locale);
+            String filter = params[1];
+
+            return MoviesService.getMovies(locale, MoviesService.Filter.valueOf(filter));
         }
 
         @Override
@@ -111,4 +112,25 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        switch (itemId) {
+            case R.id.top_rated:
+                mMoviesAdapter.setMoviesData(null);
+                loadMovieData(MoviesService.Filter.TOP_RATED);
+                break;
+            case R.id.popular:
+                mMoviesAdapter.setMoviesData(null);
+                loadMovieData(MoviesService.Filter.POPULAR);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

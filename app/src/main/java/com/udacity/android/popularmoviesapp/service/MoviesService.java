@@ -11,7 +11,6 @@ import com.udacity.android.popularmoviesapp.domain.MovieResponse;
 import com.udacity.android.popularmoviesapp.utils.HttpUtils;
 
 import java.util.List;
-import java.util.Locale;
 
 public class MoviesService {
 
@@ -25,7 +24,7 @@ public class MoviesService {
 
     private static final String LANGUAGE_PARAM = "language";
 
-    private static final String DEFAULT_LANGUAGE= "pt-BR";
+    private static final String DEFAULT_LANGUAGE = "pt-BR";
 
     private static final String MOST_POPULAR = "popular";
 
@@ -36,16 +35,26 @@ public class MoviesService {
     private MoviesService() {
     }
 
-    private static Uri buildUrl(String sortStrategy,String locale) {
-        return Uri.parse(String.format(MOVIES_BASE_URL,sortStrategy))
+    private static Uri buildUrl(String sortStrategy, String locale) {
+        return Uri.parse(String.format(MOVIES_BASE_URL, sortStrategy))
                 .buildUpon()
                 .appendQueryParameter(API_KEY_PARAM, movieApiKey)
-                .appendQueryParameter(LANGUAGE_PARAM,locale)
+                .appendQueryParameter(LANGUAGE_PARAM, locale)
                 .build();
     }
 
-    public static List<Movie> popularMovies(String locale) {
-        Uri popularMoviesUri = buildUrl(MOST_POPULAR,locale);
+
+    public static List<Movie> getMovies(String locale, Filter filter) {
+        switch (filter) {
+            case TOP_RATED:
+                return topRatedMovies(locale);
+            default:
+                return popularMovies(locale);
+        }
+    }
+
+    private static List<Movie> popularMovies(String locale) {
+        Uri popularMoviesUri = buildUrl(MOST_POPULAR, locale);
         String mostPopularMoviesJson = HttpUtils.fetchDataFrom(popularMoviesUri);
         return parseJSON(mostPopularMoviesJson).getResults();
     }
@@ -54,8 +63,8 @@ public class MoviesService {
         return popularMovies(DEFAULT_LANGUAGE);
     }
 
-    public static List<Movie> topRatedMovies(String locale) {
-        Uri topRatedMoviesUri = buildUrl(MOST_RATED,locale);
+    private static List<Movie> topRatedMovies(String locale) {
+        Uri topRatedMoviesUri = buildUrl(MOST_RATED, locale);
         String topRatedMoviesJson = HttpUtils.fetchDataFrom(topRatedMoviesUri);
         return parseJSON(topRatedMoviesJson).getResults();
     }
@@ -64,17 +73,33 @@ public class MoviesService {
         return gson.fromJson(json, MovieResponse.class);
     }
 
-    public enum ImagesSizes{
-        LDPI("w92"),MDPI("w154"),HDPI("w185"), XHDPI("w342"),
-        XXHDPI("w500"), XXXHDPI("w780");
+    public enum ImagesSizes {
+        LDPI("w92"),
+        MDPI("w154"),
+        HDPI("w185"),
+        XHDPI("w342"),
+        XXHDPI("w500"),
+        XXXHDPI("w780");
 
         private String imageSize;
+
         ImagesSizes(String imageSize) {
             this.imageSize = imageSize;
         }
 
         public String getImageSize() {
             return imageSize;
+        }
+    }
+
+    public enum Filter {
+        POPULAR("popular"),
+        TOP_RATED("top_rated");
+
+        private final String filter;
+
+        Filter(String filter) {
+            this.filter = filter;
         }
     }
 

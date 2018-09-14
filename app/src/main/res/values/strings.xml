@@ -3,4 +3,6 @@
     <string name="error_message">Error while trying to fetch the movie list!</string>
     <string name="synopsis">Synopsis:</string>
     <string name="average">Vote Average:</string>
+    <string name="top_rated">Top Rated</string>
+    <string name="popular">Popular</string>
 </resources>
