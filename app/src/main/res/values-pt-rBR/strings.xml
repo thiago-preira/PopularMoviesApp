@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Filmes Famosos</string>
+    <string name="error_message">Não foi possível exibir a listagem de filmes!</string>
+    <string name="synopsis">Sinopse:</string>
+    <string name="average">Média de Votos:</string>
+    <string name="top_rated">Mais Votados</string>
+    <string name="popular">Populares</string>
+</resources>
