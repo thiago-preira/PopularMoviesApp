@@ -16,6 +16,9 @@ import com.udacity.android.popularmoviesapp.utils.DeviceUtils;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdapterViewHolder> {
 
     private List<Movie> mMoviesData;
@@ -58,11 +61,12 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
 
     public class MoviesAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private ImageView mMoviePosterImageView;
+        @BindView(R.id.iv_movie_poster)
+        ImageView mMoviePosterImageView;
 
         public MoviesAdapterViewHolder(View itemView) {
             super(itemView);
-            mMoviePosterImageView = (ImageView) itemView.findViewById(R.id.iv_movie_poster);
+            ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
         }
 

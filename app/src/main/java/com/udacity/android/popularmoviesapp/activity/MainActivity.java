@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.udacity.android.popularmoviesapp.MovieDetailActivity;
 import com.udacity.android.popularmoviesapp.R;
 import com.udacity.android.popularmoviesapp.adapter.MoviesAdapter;
 import com.udacity.android.popularmoviesapp.domain.Movie;
@@ -23,13 +22,19 @@ import com.udacity.android.popularmoviesapp.utils.DeviceUtils;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity
         implements MoviesAdapter.MoviesAdapterOnClickHandler,
-        TaskCallback<Movie>{
+        TaskCallback<Movie> {
 
-    private RecyclerView mMoviesRecyclerView;
-    private TextView mErrorMessageDisplay;
-    private ProgressBar mLoadingIndicator;
+    @BindView(R.id.recyclerview_movies)
+    RecyclerView mMoviesRecyclerView;
+    @BindView(R.id.tv_error_message_display)
+    TextView mErrorMessageDisplay;
+    @BindView(R.id.pb_loading_indicator)
+    ProgressBar mLoadingIndicator;
     private MoviesAdapter mMoviesAdapter;
 
     @Override
@@ -37,9 +42,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mMoviesRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_movies);
-        mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+        ButterKnife.bind(this);
 
         int mNoOfColumns = DeviceUtils.numberOfColumns(this);
         mMoviesRecyclerView.setLayoutManager(new GridLayoutManager(this, mNoOfColumns));
