@@ -2,8 +2,6 @@ package com.udacity.android.popularmoviesapp.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -19,14 +17,15 @@ import com.udacity.android.popularmoviesapp.R;
 import com.udacity.android.popularmoviesapp.adapter.MoviesAdapter;
 import com.udacity.android.popularmoviesapp.domain.Movie;
 import com.udacity.android.popularmoviesapp.service.MoviesService;
+import com.udacity.android.popularmoviesapp.task.FetchMoviesTask;
+import com.udacity.android.popularmoviesapp.task.TaskCallback;
 import com.udacity.android.popularmoviesapp.utils.DeviceUtils;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements MoviesAdapter.MoviesAdapterOnClickHandler {
-
-    private static final int PORTRAIT_NUM_COLUMNS = 2;
-    private static final int LANDSCAPE_NUM_COLUMNS = 4;
+public class MainActivity extends AppCompatActivity
+        implements MoviesAdapter.MoviesAdapterOnClickHandler,
+        TaskCallback<Movie>{
 
     private RecyclerView mMoviesRecyclerView;
     private TextView mErrorMessageDisplay;
@@ -42,12 +41,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            mMoviesRecyclerView.setLayoutManager(new GridLayoutManager(this, PORTRAIT_NUM_COLUMNS));
-        } else {
-            mMoviesRecyclerView.setLayoutManager(new GridLayoutManager(this, LANDSCAPE_NUM_COLUMNS));
-        }
-
+        int mNoOfColumns = DeviceUtils.numberOfColumns(this);
+        mMoviesRecyclerView.setLayoutManager(new GridLayoutManager(this, mNoOfColumns));
 
         mMoviesRecyclerView.setHasFixedSize(true);
 
@@ -58,9 +53,11 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
 
     private void loadMovieData(MoviesService.Filter filter) {
-        if (DeviceUtils.hasInternet(this)) {
+        Context context = getApplicationContext();
+        if (DeviceUtils.hasInternet(context)) {
             showMoviesData();
-            new FetchMoviesTask().execute(DeviceUtils.getLanguage(this), filter.name());
+            new FetchMoviesTask(MainActivity.this)
+                    .execute(DeviceUtils.getLanguage(context), filter.name());
         } else {
             showErrorMessage();
         }
@@ -85,37 +82,6 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         startActivity(intentToStartDetailActivity);
     }
 
-    class FetchMoviesTask extends AsyncTask<String, Void, List<Movie>> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mLoadingIndicator.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected List<Movie> doInBackground(String... params) {
-            if (params.length == 0) {
-                return MoviesService.popularMovies();
-            }
-            String locale = params[0];
-            String filter = params[1];
-
-            return MoviesService.getMovies(locale, MoviesService.Filter.valueOf(filter));
-        }
-
-        @Override
-        protected void onPostExecute(List<Movie> moviesData) {
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
-            if (moviesData != null) {
-                showMoviesData();
-                mMoviesAdapter.setMoviesData(moviesData);
-            } else {
-                showErrorMessage();
-            }
-        }
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
@@ -136,5 +102,21 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onTaskStart() {
+        mLoadingIndicator.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onTaskComplete(List<Movie> result) {
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+        if (result != null) {
+            showMoviesData();
+            mMoviesAdapter.setMoviesData(result);
+        } else {
+            showErrorMessage();
+        }
     }
 }

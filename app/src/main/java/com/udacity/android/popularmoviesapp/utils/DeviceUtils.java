@@ -9,8 +9,8 @@ import java.util.Locale;
 public class DeviceUtils {
 
     /*Code to check density of screen
-    * https://stackoverflow.com/questions/3166501/getting-the-screen-density-programmatically-in-android
-    * */
+     * https://stackoverflow.com/questions/3166501/getting-the-screen-density-programmatically-in-android
+     * */
     public static String getDeviceDensity(Context context) {
         String deviceDensity;
         switch (context.getResources().getDisplayMetrics().densityDpi) {
@@ -56,6 +56,13 @@ public class DeviceUtils {
         ConnectivityManager connectivityManager = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         return connectivityManager.isDefaultNetworkActive();
+    }
+
+    public static int numberOfColumns(Context context) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        int noOfColumns = (int) (dpWidth / 180);
+        return noOfColumns;
     }
 
 }
