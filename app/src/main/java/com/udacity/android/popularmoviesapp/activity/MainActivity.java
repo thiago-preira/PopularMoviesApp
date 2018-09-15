@@ -51,16 +51,16 @@ public class MainActivity extends AppCompatActivity
 
         mMoviesAdapter = new MoviesAdapter(this);
         mMoviesRecyclerView.setAdapter(mMoviesAdapter);
-        loadMovieData(MoviesService.Filter.POPULAR);
+        loadMovieData(MoviesService.MOST_POPULAR);
     }
 
 
-    private void loadMovieData(MoviesService.Filter filter) {
+    private void loadMovieData(String filter) {
         Context context = getApplicationContext();
         if (DeviceUtils.hasInternet(context)) {
             showMoviesData();
             new FetchMoviesTask(MainActivity.this)
-                    .execute(DeviceUtils.getLanguage(context), filter.name());
+                    .execute(DeviceUtils.getLanguage(context), filter);
         } else {
             showErrorMessage();
         }
@@ -97,11 +97,11 @@ public class MainActivity extends AppCompatActivity
         switch (itemId) {
             case R.id.top_rated:
                 mMoviesAdapter.setMoviesData(null);
-                loadMovieData(MoviesService.Filter.TOP_RATED);
+                loadMovieData(MoviesService.MOST_RATED);
                 break;
             case R.id.popular:
                 mMoviesAdapter.setMoviesData(null);
-                loadMovieData(MoviesService.Filter.POPULAR);
+                loadMovieData(MoviesService.MOST_POPULAR);
                 break;
         }
         return super.onOptionsItemSelected(item);

@@ -29,7 +29,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, List<Movie>> {
         String locale = params[0];
         String filter = params[1];
 
-        return MoviesService.getMovies(locale, MoviesService.Filter.valueOf(filter));
+        return MoviesService.getMovies(locale, filter);
     }
 
     @Override

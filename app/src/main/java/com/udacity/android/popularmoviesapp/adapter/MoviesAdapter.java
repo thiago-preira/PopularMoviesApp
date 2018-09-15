@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 import com.udacity.android.popularmoviesapp.R;
 import com.udacity.android.popularmoviesapp.domain.Movie;
-import com.udacity.android.popularmoviesapp.service.MoviesService;
+import com.udacity.android.popularmoviesapp.service.ImageSize;
 import com.udacity.android.popularmoviesapp.utils.DeviceUtils;
 
 import java.util.List;
@@ -48,8 +48,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
     public void onBindViewHolder(@NonNull MoviesAdapterViewHolder holder, int position) {
         Movie movie = mMoviesData.get(position);
         Context context = holder.itemView.getContext();
-        String deviceDensity = DeviceUtils.getDeviceDensity(context);
-        String imageSize = MoviesService.ImagesSizes.valueOf(deviceDensity).getImageSize();
+        int deviceDensity = DeviceUtils.getDeviceDensity(context);
+        String imageSize = ImageSize.getSizeByDensity(deviceDensity);
         Picasso.with(context).load(movie.getPoster(imageSize)).into(holder.mMoviePosterImageView);
     }
 
