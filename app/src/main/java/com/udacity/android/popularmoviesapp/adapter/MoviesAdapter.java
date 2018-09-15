@@ -11,10 +11,13 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 import com.udacity.android.popularmoviesapp.R;
 import com.udacity.android.popularmoviesapp.domain.Movie;
-import com.udacity.android.popularmoviesapp.service.MoviesService;
+import com.udacity.android.popularmoviesapp.service.ImageSize;
 import com.udacity.android.popularmoviesapp.utils.DeviceUtils;
 
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdapterViewHolder> {
 
@@ -45,8 +48,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
     public void onBindViewHolder(@NonNull MoviesAdapterViewHolder holder, int position) {
         Movie movie = mMoviesData.get(position);
         Context context = holder.itemView.getContext();
-        String deviceDensity = DeviceUtils.getDeviceDensity(context);
-        String imageSize = MoviesService.ImagesSizes.valueOf(deviceDensity).getImageSize();
+        int deviceDensity = DeviceUtils.getDeviceDensity(context);
+        String imageSize = ImageSize.getSizeByDensity(deviceDensity);
         Picasso.with(context).load(movie.getPoster(imageSize)).into(holder.mMoviePosterImageView);
     }
 
@@ -58,11 +61,12 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
 
     public class MoviesAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private ImageView mMoviePosterImageView;
+        @BindView(R.id.iv_movie_poster)
+        ImageView mMoviePosterImageView;
 
         public MoviesAdapterViewHolder(View itemView) {
             super(itemView);
-            mMoviePosterImageView = (ImageView) itemView.findViewById(R.id.iv_movie_poster);
+            ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
         }
 

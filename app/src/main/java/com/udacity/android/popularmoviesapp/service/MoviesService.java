@@ -26,9 +26,9 @@ public class MoviesService {
 
     private static final String DEFAULT_LANGUAGE = "pt-BR";
 
-    private static final String MOST_POPULAR = "popular";
+    public static final String MOST_POPULAR = "popular";
 
-    private static final String MOST_RATED = "top_rated";
+    public static final String MOST_RATED = "top_rated";
 
     private static final String movieApiKey = BuildConfig.MovieDBApiKey;
 
@@ -44,12 +44,11 @@ public class MoviesService {
     }
 
 
-    public static List<Movie> getMovies(String locale, Filter filter) {
-        switch (filter) {
-            case TOP_RATED:
-                return topRatedMovies(locale);
-            default:
-                return popularMovies(locale);
+    public static List<Movie> getMovies(String locale, String filter) {
+        if(filter.equals(MOST_RATED)) {
+            return topRatedMovies(locale);
+        }else{
+            return popularMovies(locale);
         }
     }
 
@@ -71,36 +70,6 @@ public class MoviesService {
 
     private static MovieResponse parseJSON(String json) {
         return gson.fromJson(json, MovieResponse.class);
-    }
-
-    public enum ImagesSizes {
-        LDPI("w92"),
-        MDPI("w154"),
-        HDPI("w185"),
-        XHDPI("w342"),
-        XXHDPI("w500"),
-        XXXHDPI("w780");
-
-        private String imageSize;
-
-        ImagesSizes(String imageSize) {
-            this.imageSize = imageSize;
-        }
-
-        public String getImageSize() {
-            return imageSize;
-        }
-    }
-
-    public enum Filter {
-        POPULAR("popular"),
-        TOP_RATED("top_rated");
-
-        private final String filter;
-
-        Filter(String filter) {
-            this.filter = filter;
-        }
     }
 
 }

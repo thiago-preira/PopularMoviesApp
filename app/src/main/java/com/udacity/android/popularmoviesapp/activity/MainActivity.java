@@ -2,8 +2,6 @@ package com.udacity.android.popularmoviesapp.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,23 +12,31 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.udacity.android.popularmoviesapp.MovieDetailActivity;
 import com.udacity.android.popularmoviesapp.R;
 import com.udacity.android.popularmoviesapp.adapter.MoviesAdapter;
 import com.udacity.android.popularmoviesapp.domain.Movie;
 import com.udacity.android.popularmoviesapp.service.MoviesService;
+import com.udacity.android.popularmoviesapp.task.FetchMoviesTask;
+import com.udacity.android.popularmoviesapp.task.TaskCallback;
 import com.udacity.android.popularmoviesapp.utils.DeviceUtils;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements MoviesAdapter.MoviesAdapterOnClickHandler {
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
-    private static final int PORTRAIT_NUM_COLUMNS = 2;
-    private static final int LANDSCAPE_NUM_COLUMNS = 4;
+public class MainActivity extends AppCompatActivity
+        implements MoviesAdapter.MoviesAdapterOnClickHandler,
+        TaskCallback<Movie> {
 
-    private RecyclerView mMoviesRecyclerView;
-    private TextView mErrorMessageDisplay;
-    private ProgressBar mLoadingIndicator;
+    @BindView(R.id.recyclerview_movies)
+    RecyclerView mMoviesRecyclerView;
+    @BindView(R.id.tv_error_message_display)
+    TextView mErrorMessageDisplay;
+    @BindView(R.id.pb_loading_indicator)
+    ProgressBar mLoadingIndicator;
     private MoviesAdapter mMoviesAdapter;
 
     @Override
@@ -38,29 +44,25 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mMoviesRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_movies);
-        mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
+        ButterKnife.bind(this);
 
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            mMoviesRecyclerView.setLayoutManager(new GridLayoutManager(this, PORTRAIT_NUM_COLUMNS));
-        } else {
-            mMoviesRecyclerView.setLayoutManager(new GridLayoutManager(this, LANDSCAPE_NUM_COLUMNS));
-        }
-
+        int mNoOfColumns = DeviceUtils.numberOfColumns(this);
+        mMoviesRecyclerView.setLayoutManager(new GridLayoutManager(this, mNoOfColumns));
 
         mMoviesRecyclerView.setHasFixedSize(true);
 
         mMoviesAdapter = new MoviesAdapter(this);
         mMoviesRecyclerView.setAdapter(mMoviesAdapter);
-        loadMovieData(MoviesService.Filter.POPULAR);
+        loadMovieData(MoviesService.MOST_POPULAR);
     }
 
 
-    private void loadMovieData(MoviesService.Filter filter) {
-        if (DeviceUtils.hasInternet(this)) {
+    private void loadMovieData(String filter) {
+        Context context = getApplicationContext();
+        if (DeviceUtils.hasInternet(context)) {
             showMoviesData();
-            new FetchMoviesTask().execute(DeviceUtils.getLanguage(this), filter.name());
+            new FetchMoviesTask(MainActivity.this)
+                    .execute(DeviceUtils.getLanguage(context), filter);
         } else {
             showErrorMessage();
         }
@@ -81,39 +83,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         Context context = this;
         Class destinationClass = MovieDetailActivity.class;
         Intent intentToStartDetailActivity = new Intent(context, destinationClass);
-        intentToStartDetailActivity.putExtra("Movie", movie);
+        intentToStartDetailActivity.putExtra("Movie", Parcels.wrap(movie));
         startActivity(intentToStartDetailActivity);
-    }
-
-    class FetchMoviesTask extends AsyncTask<String, Void, List<Movie>> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mLoadingIndicator.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected List<Movie> doInBackground(String... params) {
-            if (params.length == 0) {
-                return MoviesService.popularMovies();
-            }
-            String locale = params[0];
-            String filter = params[1];
-
-            return MoviesService.getMovies(locale, MoviesService.Filter.valueOf(filter));
-        }
-
-        @Override
-        protected void onPostExecute(List<Movie> moviesData) {
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
-            if (moviesData != null) {
-                showMoviesData();
-                mMoviesAdapter.setMoviesData(moviesData);
-            } else {
-                showErrorMessage();
-            }
-        }
     }
 
     @Override
@@ -128,13 +99,29 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         switch (itemId) {
             case R.id.top_rated:
                 mMoviesAdapter.setMoviesData(null);
-                loadMovieData(MoviesService.Filter.TOP_RATED);
+                loadMovieData(MoviesService.MOST_RATED);
                 break;
             case R.id.popular:
                 mMoviesAdapter.setMoviesData(null);
-                loadMovieData(MoviesService.Filter.POPULAR);
+                loadMovieData(MoviesService.MOST_POPULAR);
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onTaskStart() {
+        mLoadingIndicator.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onTaskComplete(List<Movie> result) {
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+        if (result != null) {
+            showMoviesData();
+            mMoviesAdapter.setMoviesData(result);
+        } else {
+            showErrorMessage();
+        }
     }
 }
