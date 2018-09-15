@@ -39,7 +39,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         if (intentThatStartedThisActivity != null) {
             if (intentThatStartedThisActivity.hasExtra("Movie")) {
-                Movie movie = (Movie)  Parcels.unwrap(intentThatStartedThisActivity.getParcelableExtra("Movie"));
+                Movie movie = Parcels.unwrap(intentThatStartedThisActivity.getParcelableExtra("Movie"));
                 Picasso.with(this).load(movie.getPoster("w500")).into(mMoviePosterImageView);
                 mMovieTitle.setText(movie.getTitle());
                 mMovieOverview.setText(movie.getOverview());
