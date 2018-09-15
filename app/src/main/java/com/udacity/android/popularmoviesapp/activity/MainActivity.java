@@ -20,6 +20,8 @@ import com.udacity.android.popularmoviesapp.task.FetchMoviesTask;
 import com.udacity.android.popularmoviesapp.task.TaskCallback;
 import com.udacity.android.popularmoviesapp.utils.DeviceUtils;
 
+import org.parceler.Parcels;
+
 import java.util.List;
 
 import butterknife.BindView;
@@ -81,7 +83,7 @@ public class MainActivity extends AppCompatActivity
         Context context = this;
         Class destinationClass = MovieDetailActivity.class;
         Intent intentToStartDetailActivity = new Intent(context, destinationClass);
-        intentToStartDetailActivity.putExtra("Movie", movie);
+        intentToStartDetailActivity.putExtra("Movie", Parcels.wrap(movie));
         startActivity(intentToStartDetailActivity);
     }
 
